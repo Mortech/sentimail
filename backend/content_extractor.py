@@ -5,6 +5,9 @@ import math
 import nltk
 from os import listdir
 
+posStats = {}
+negStats = {}
+
 def load_sentidata():
     f = open("SentiWordNet_3.0.0_20130122.txt")
     lines = f.readlines()
@@ -38,7 +41,8 @@ def get_polarity(text, pol, smoothing, polarity):
 def process_msg(f):
     # fetch time
     f.readline()
-    time = f.readline()
+    timeList = f.readline().split()
+    time = timeList[3] + timeList[4]
 
     # skip to the contents
     line = f.readline()
@@ -49,31 +53,44 @@ def process_msg(f):
     polarity = create_polarity(sentidata)
     smoothing = 1.0/len(polarity)
 
-    pos_likelihood = 0
-    neg_likelihood = 0
+    posLikelihood = 0
+    negLikelihood = 0
 
     line = f.readline()
     while len(line) > 0:
-        pos_likelihood += get_polarity(nltk.word_tokenize(line), 0,
-                                       smoothing, polarity)
-        neg_likelihood += get_polarity(nltk.word_tokenize(line), 1,
-                                       smoothing, polarity)
+        posLikelihood += get_polarity(nltk.word_tokenize(line), 0,
+                                      smoothing, polarity)
+        negLikelihood += get_polarity(nltk.word_tokenize(line), 1,
+                                      smoothing, polarity)
         line = f.readline()
 
-    return pos_likelihood > neg_likelihood
+    if not (time in posStats):
+        posStats[time] = 0
+        negStats[time] = 0
+
+    if posLikelihood > negLikelihood:
+        posStats[time] += 1
+    else:
+        negStats[time] += 1
 
 def read_mails(path):
     # find all emails in the folder
+    mailCount = 0
     for fn in listdir(path + '/all_documents/'):
         fileName = path + '/all_documents/' + fn
         f = open(fileName, 'r')
-        print process_msg(f)
+        process_msg(f)
         f.close()
+        mailCount += 1
+        if mailCount % 10 == 0:
+            print 'Processed ' + str(mailCount) + ' mails.'
 
 if len(sys.argv) != 2:
     print 'Please provide the email directory, e.g. ../data/lay-k'
 else:
     try:
         read_mails(sys.argv[1])
+        print posStats
+        print negStats
     except:
         print 'Failed to retrieve the emails'
