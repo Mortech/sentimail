@@ -55,8 +55,6 @@ def process_msg(f):
     while len(line) > 1:
         line = f.readline()
 
-    #sentidata = load_sentidata()
-    #polarity = create_polarity(sentidata)
     smoothing = 1.0/len(polarity)
 
     posLikelihood = 0
@@ -92,7 +90,7 @@ def read_mails(path):
         emailPositivity.append((fileName, positivity))
         f.close()
         mailCount += 1
-        if mailCount % 10 == 0:
+        if mailCount % 100 == 0:
             print 'Processed ' + str(mailCount) + ' mails.'
 if len(sys.argv) != 2:
     print 'Please provide the email directory, e.g. ../data/lay-k'
