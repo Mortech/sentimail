@@ -19,6 +19,8 @@ def load_sentidata():
         sentidata.append(line.strip().split('\t'))
     return sentidata
 
+sentidata = load_sentidata()
+
 def create_polarity(sentidata):
     polarity = {}
     for item in sentidata:
@@ -28,6 +30,8 @@ def create_polarity(sentidata):
                 if sense.split('#')[0] not in polarity:
                     polarity[sense.split('#')[0]] = (item[2], item[3])
     return polarity
+
+polarity = create_polarity(sentidata)
 
 def get_polarity(text, pol, smoothing, polarity):
     result = 0
@@ -49,8 +53,8 @@ def process_msg(f):
     while len(line) > 1:
         line = f.readline()
 
-    sentidata = load_sentidata()
-    polarity = create_polarity(sentidata)
+    #sentidata = load_sentidata()
+    #polarity = create_polarity(sentidata)
     smoothing = 1.0/len(polarity)
 
     posLikelihood = 0
@@ -84,13 +88,13 @@ def read_mails(path):
         mailCount += 1
         if mailCount % 10 == 0:
             print 'Processed ' + str(mailCount) + ' mails.'
-
-if len(sys.argv) != 2:
-    print 'Please provide the email directory, e.g. ../data/lay-k'
-else:
-    try:
-        read_mails(sys.argv[1])
-        print posStats
-        print negStats
-    except:
-        print 'Failed to retrieve the emails'
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print 'Please provide the email directory, e.g. ../data/lay-k'
+    else:
+        try:
+            read_mails(sys.argv[1])
+            print posStats
+            print negStats
+        except:
+            print 'Failed to retrieve the emails'
