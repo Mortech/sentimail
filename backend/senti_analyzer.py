@@ -8,6 +8,7 @@ from os import listdir
 
 posStats = {}
 negStats = {}
+emailPositivity = []
 
 def load_sentidata():
     f = open("SentiWordNet_3.0.0_20130122.txt")
@@ -77,6 +78,9 @@ def process_msg(f):
         posStats[time] += 1
     else:
         negStats[time] += 1
+    if (posLikelihood+negLikelihood) == 0:
+        return 0
+    return (posLikelihood / (posLikelihood+negLikelihood))*2-1
 
 def read_mails(path):
     # find all emails in the folder
@@ -84,7 +88,8 @@ def read_mails(path):
     for fn in listdir(path + '/all_documents/'):
         fileName = path + '/all_documents/' + fn
         f = open(fileName, 'r')
-        process_msg(f)
+        positivity = process_msg(f)
+        emailPositivity.append((fileName, positivity))
         f.close()
         mailCount += 1
         if mailCount % 10 == 0:
@@ -96,5 +101,7 @@ else:
         read_mails(sys.argv[1])
         print json.dumps(posStats)
         print json.dumps(negStats)
+        with open('emailPos.json', 'w') as outfile:
+            json.dump(emailPositivity, outfile)
     except:
         print 'Failed to retrieve the emails'
