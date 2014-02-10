@@ -3,6 +3,7 @@
 import sys
 import math
 import nltk
+import json
 from os import listdir
 
 posStats = {}
@@ -88,13 +89,12 @@ def read_mails(path):
         mailCount += 1
         if mailCount % 10 == 0:
             print 'Processed ' + str(mailCount) + ' mails.'
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print 'Please provide the email directory, e.g. ../data/lay-k'
-    else:
-        try:
-            read_mails(sys.argv[1])
-            print posStats
-            print negStats
-        except:
-            print 'Failed to retrieve the emails'
+if len(sys.argv) != 2:
+    print 'Please provide the email directory, e.g. ../data/lay-k'
+else:
+    try:
+        read_mails(sys.argv[1])
+        print json.dumps(posStats)
+        print json.dumps(negStats)
+    except:
+        print 'Failed to retrieve the emails'
