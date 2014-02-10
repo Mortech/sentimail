@@ -3,6 +3,7 @@
 import sys
 import math
 import nltk
+import json
 from os import listdir
 
 posStats = {}
@@ -90,7 +91,7 @@ if len(sys.argv) != 2:
 else:
     try:
         read_mails(sys.argv[1])
-        print posStats
-        print negStats
+        print json.dumps(posStats)
+        print json.dumps(negStats)
     except:
         print 'Failed to retrieve the emails'
