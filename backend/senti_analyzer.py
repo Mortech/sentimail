@@ -100,10 +100,10 @@ if len(sys.argv) != 2:
     print 'Please provide the email directory, e.g. ../data/lay-k'
 else:
     try:
-    read_mails(sys.argv[1])
-    print json.dumps(posStats)
-    print json.dumps(negStats)
-    with open('emailPos.json', 'w') as outfile:
-        json.dump(emailPositivity, outfile)
+        read_mails(sys.argv[1])
+        print json.dumps(posStats)
+        print json.dumps(negStats)
+        with open('emailPos.json', 'w') as outfile:
+            json.dump(emailPositivity, outfile)
     except:
         print 'Failed to retrieve the emails'
