@@ -4,11 +4,12 @@ import sys
 import math
 import nltk
 import json
+import string
 from os import listdir
 
 posStats = {}
 negStats = {}
-emailPositivity = []
+emailPositivity = {}
 
 def load_sentidata():
     f = open("SentiWordNet_3.0.0_20130122.txt")
@@ -44,7 +45,7 @@ def get_polarity(text, pol, smoothing, polarity):
             result += math.log(smoothing)
     return result
 
-def process_msg(f):
+def process_msg(f, fileName):
     # fetch time
     f.readline()
     timeList = f.readline().split()
@@ -52,6 +53,7 @@ def process_msg(f):
 
     # skip to the contents
     line = f.readline()
+    name=string.split(line)[1]
     while len(line) > 1:
         line = f.readline()
 
@@ -78,7 +80,10 @@ def process_msg(f):
         negStats[time] += 1
     if (posLikelihood+negLikelihood) == 0:
         return 0
-    return (posLikelihood / (posLikelihood+negLikelihood))*2-1
+    try:
+        emailPositivity[name].append((fileName, (posLikelihood / (posLikelihood+negLikelihood))*2-1))
+    except:
+        emailPositivity[name] = [(fileName, (posLikelihood / (posLikelihood+negLikelihood))*2-1)]
 
 def read_mails(path):
     # find all emails in the folder
@@ -86,8 +91,7 @@ def read_mails(path):
     for fn in listdir(path + '/all_documents/'):
         fileName = path + '/all_documents/' + fn
         f = open(fileName, 'r')
-        positivity = process_msg(f)
-        emailPositivity.append((fileName, positivity))
+        process_msg(f, fileName)
         f.close()
         mailCount += 1
         if mailCount % 100 == 0:
@@ -96,10 +100,10 @@ if len(sys.argv) != 2:
     print 'Please provide the email directory, e.g. ../data/lay-k'
 else:
     try:
-        read_mails(sys.argv[1])
-        print json.dumps(posStats)
-        print json.dumps(negStats)
-        with open('emailPos.json', 'w') as outfile:
-            json.dump(emailPositivity, outfile)
+    read_mails(sys.argv[1])
+    print json.dumps(posStats)
+    print json.dumps(negStats)
+    with open('emailPos.json', 'w') as outfile:
+        json.dump(emailPositivity, outfile)
     except:
         print 'Failed to retrieve the emails'
