@@ -37,6 +37,11 @@ def getKeyMonth(item):
     year = float(data[3:])
     return 200*year+month
 
+def getKeyJSON(item):
+    data = item
+    month = months[data[0:3]]
+    year = float(data[3:])
+    return 200*year+month
 
 def load_sentidata():
     f = open("SentiWordNet_3.0.0_20130122.txt")
@@ -138,8 +143,8 @@ def process_msg(f, fileName):
 def read_mails(path):
     # find all emails in the folder
     mailCount = 0
-    for fn in listdir(path + '/inbox/'):
-        fileName = path + '/inbox/' + fn
+    for fn in listdir(path + '/all_documents/'):
+        fileName = path + '/all_documents/' + fn
         f = open(fileName, 'r')
         process_msg(f, fileName)
         f.close()
@@ -178,7 +183,7 @@ else:
             print >> writeFile, "\"values\" :"
             print >> writeFile, temp2.posDates
             print >> writeFile, "},"
-        print >> writeFile, "]"
+        print >> writeFile, "];"
         print >> writeFile, "var negData = ["
         for x in range(0,maxLength):
             temp = emailList[x]
@@ -188,7 +193,27 @@ else:
             print >> writeFile, "\"values\" :"
             print >> writeFile, temp2.negDates
             print >> writeFile, "},"
-        print >> writeFile, "]"
+        print >> writeFile, "];"
+
+        # convert the data into a usable format for the graphic
+        posStatsList = []
+        negStatsList = []
+        for tempTuple in posStats.items():
+            posStatsList.append(list(tempTuple))
+        for tempTuple in negStats.items():
+            negStatsList.append(list(tempTuple))
+
+        posStatsList.sort(key=getKeyMonth)
+        negStatsList.sort(key=getKeyMonth)
+
+        #print the new pos and neg stats to the file
+        print >> writeFile, "var stats = ["
+        print >> writeFile, "{\"key\" : \"Positive Emails\" ,\n\"values\" :"
+        print >> writeFile, posStatsList
+        print >> writeFile, "},"
+        print >> writeFile, "{\"key\" : \"Negative Emails\" ,\n\"values\" :"
+        print >> writeFile, negStatsList
+        print >> writeFile, "}];"
         writeFile.close()
     except:
         print 'Failed to retrieve the emails'
