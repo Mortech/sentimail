@@ -411,6 +411,8 @@ var stats = [
       //------------------------------------------------------------
 
       stacked.dispatch.on('areaClick.toggle', function(e) {
+      //0 for pos 
+      //1 for neg
         if (data.filter(function(d) { return !d.disabled }).length === 1)
           data.forEach(function(d) {
             d.disabled = false;
@@ -422,20 +424,6 @@ var stats = [
 
         state.disabled = data.map(function(d) { return !!d.disabled });
         dispatch.stateChange(state);
-        
-        // Change style on click
-        if(stacked.style() == 'stack')
-        {
-        	stacked.style('expand');
-        }
-        else if(stacked.style() == 'expand')
-        {
-	        stacked.style('stack');
-        }
-        
-        data.forEach(function(d,i) {
-            d.disabled = false;
-          });
         	
         chart.update();
       });

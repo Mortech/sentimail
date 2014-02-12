@@ -342,21 +342,28 @@ nv.addGraph(function() {
     //         })});
 
   nv.utils.windowResize(chart.update);
-  
-   chart.dispatch.on('stateChange', function(e) 
-   { 
-   		if(chart.stacked.style() != 'stack')
-   		{
-   			d3.select('#chart1').datum(negData);
-   		}
-   		else
-   		{
-   			d3.select('#chart1').datum(stats);
-   		}
-   });
+
+	chart.stacked.dispatch.on('areaClick.toggle', function(e) {
+		console.log(e.seriesIndex)
+		if(e.seriesIndex == 0)
+		{
+			d3.select('#chart1').datum(posData);
+			console.log("Pos")
+		}
+		else if (e.seriesIndex == 1)
+		{
+			d3.select('#chart1').datum(negData);
+			console.log("Neg")
+		}
+		chart.stacked.style('stack');
+		chart.update();
+	});
+
+
 
   return chart;
 });
+
 
 
 </script>
