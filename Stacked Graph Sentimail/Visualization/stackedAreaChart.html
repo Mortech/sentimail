@@ -364,6 +364,12 @@ nv.addGraph(function() {
   return chart;
 });
 
-
+function goBackToHome()
+{
+	chart.stacked.style('expand');
+	d3.select('#chart1').datum(stats);
+	chart.update();
+}
 
 </script>
+<button onclick="goBackToHome()">Back</button>

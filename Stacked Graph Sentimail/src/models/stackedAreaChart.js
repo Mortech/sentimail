@@ -410,7 +410,7 @@ var stats = [
       // Event Handling/Dispatching (in chart's scope)
       //------------------------------------------------------------
 
-      stacked.dispatch.on('areaClick.toggle', function(e) {
+      /*stacked.dispatch.on('areaClick.toggle', function(e) {
       //0 for pos 
       //1 for neg
         if (data.filter(function(d) { return !d.disabled }).length === 1)
@@ -426,7 +426,8 @@ var stats = [
         dispatch.stateChange(state);
         	
         chart.update();
-      });
+        console.log("js called");
+      });*/
 
       legend.dispatch.on('stateChange', function(newState) {
         state.disabled = newState.disabled;
